@@ -1,0 +1,54 @@
+mql5
+//+------------------------------------------------------------------+
+//|                                                Top USD Index.mq5 |
+//|                      Copyright 2022, Forex Robot Easy Team       |
+//|                            https://www.forexroboteasy.com         |
+//+------------------------------------------------------------------+
+
+//--- Indicator initialization function
+int OnInit()
+{
+   //--- Add indicator buffers
+   IndicatorBuffers(1);
+   //--- Set buffer 0 as the dollar index values
+   SetIndexBuffer(0, DollarIndex);
+
+   //--- Define indicator properties
+   IndicatorShortName('Top USD Index');
+   IndicatorDigits(Digits);
+   IndicatorType(IND_CUSTOM);
+   SetIndexStyle(0, DRAW_LINE);
+   SetIndexLabel(0, 'Dollar Index');
+
+   return(INIT_SUCCEEDED);
+}
+
+//--- Indicator calculation function
+int OnCalculate(const int rates_total,
+                const int prev_calculated,
+                const datetime &time[],
+                const double &open[],
+                const double &high[],
+                const double &low[],
+                const double &close[],
+                const long &tick_volume[],
+                const long &volume[],
+                const int &spread[])
+{
+   //--- Calculate dollar index for each currency pair
+   double eurusd_index = SymbolToIndex('EURUSD');
+   double gbpusd_index = SymbolToIndex('GBPUSD');
+   double usdjpy_index = SymbolToIndex('USDJPY');
+   double usdsek_index = SymbolToIndex('USDSEK');
+   double usdchf_index = SymbolToIndex('USDCHF');
+   double usdcad_index = SymbolToIndex('USDCAD');
+
+   //--- Calculate dollar index based on formula
+   double dollar_index = (eurusd_index + gbpusd_index + usdjpy_index + usdsek_index + usdchf_index + usdcad_index) / 6;
+
+   //--- Fill the indicator buffer with dollar index values
+   for(int i = prev_calculated; i < rates_total; i++)
+      DollarIndex[i] = dollar_index;
+
+   return(rates_total);
+}
